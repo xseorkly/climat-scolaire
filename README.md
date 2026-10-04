@@ -19,3 +19,5 @@ Conception et contenus : **Fehmi Klabi**, EF2D Technologie, référent climat sc
 
 - Les documents liés sont hébergés sur Google Drive (accès selon les droits de partage) ou sur la plateforme Modulo des formations.
 - Les réponses aux outils interactifs (quiz, autodiagnostic, parcours, trame de protocole) restent dans le navigateur de chaque utilisateur.
+- Vidéos : les vidéos de Réseau Canopé (CanoTech) sont lues directement depuis les serveurs de Canopé ; une connexion internet est nécessaire. Si la lecture est bloquée, un lien ouvre la vidéo sur CanoTech.
+- Mode projection : le bouton « Projeter » en haut de chaque page l'affiche en grand pour une formation (touche Échap pour quitter).

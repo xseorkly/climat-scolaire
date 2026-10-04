@@ -98,6 +98,23 @@ main{padding-block:32px 80px;padding-inline:24px;min-width:0}
 .body h2{font-size:var(--s-lg);font-weight:650;margin-top:16px}
 .body h3{font-size:1.05rem;font-weight:650;margin-top:6px;font-family:var(--f-body)}
 .body p,.body li{max-width:65ch}
+.vid{margin:14px 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.vid video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.vid figcaption{display:flex;flex-direction:column;gap:2px;padding:10px 14px;font-size:var(--s-sm)}
+.vid figcaption span{color:var(--muted)}
+.vid figcaption a{font-size:var(--s-xs);margin-top:4px}
+.vid-off{display:flex;flex-direction:column;gap:6px;justify-content:center;align-items:center;text-align:center;aspect-ratio:16/9;background:var(--accent);color:var(--accent-ink);text-decoration:none;padding:20px}.vid-off b{font-size:1.2rem}.vid-off span{font-size:var(--s-sm);max-width:46ch;opacity:.9}
+.vids{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.vids .vid{margin:0}
+.def{border-left:4px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:0 var(--radius) var(--radius) 0;margin:12px 0}
+.def p{margin:6px 0}.def .who{font-size:var(--s-xs);color:var(--muted)}
+.projbtn{float:right;margin-left:12px;font:inherit;font-size:var(--s-xs);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer}
+.projbtn:hover{background:var(--accent-soft)}
+body.proj .bar,body.proj .side,body.proj .crumb,body.proj .tools,body.proj .section-lbl,body.proj .links,body.proj .see,body.proj .pn,body.proj .site-foot,body.proj footer{display:none!important}
+body.proj .layout{display:block!important}
+body.proj #main .page{max-width:1100px;margin:0 auto;font-size:1.28rem;line-height:1.55}
+body.proj #main h1{font-size:2.4rem}
+body.proj .projbtn{position:fixed;top:12px;right:16px;z-index:50;font-size:.9rem}
 .fiches{display:flex;flex-direction:column;gap:8px}
 .fiche{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
 .fiche>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;padding:12px 14px;align-items:baseline}
@@ -341,17 +358,31 @@ const UNESCO_WHOLE = "https://www.unesco.org/en/articles/what-you-need-know-abou
 const MEDIATION = "https://eduscol.education.fr/sites/default/files/document/fichecsmediationpairspdf-95406.pdf";
 const MOD = p => "https://7a97dba91e3888ca1da6a61fcbbca2f5.cdn.bubble.io/" + p;
 const CT = (p,t) => ["Vidéo", t + " (CanoTech)", "https://www.canotech.fr/" + p];
+// ---------- Vidéos Réseau Canopé (CanoTech) ----------
+const VIDEOS = {
+  mpp1:{t:"Méthode de la préoccupation partagée #1. Prise en charge d'un cas d'intimidation", d:"3 min", k:"Reportage", s:"Les principes de la version française de la méthode, libre adaptation de celle d'Anatol Pikas, et le rôle de l'équipe ressource.", f:"https://cdn.reseau-canope.fr/medias/canotech/canotech_harcelement_mpp_premier_episode-720p.mp4", p:"https://www.canotech.fr/medias/MPP1-ok-ok-XXL.jpg", u:"a/34105/methode-de-la-preoccupation-partagee-1-prise-en-charge-dun-cas-dintimidation"},
+  mpp2:{t:"Méthode de la préoccupation partagée #2. Rencontres avec l'élève cible", d:"4 min", k:"Reportage", s:"Comment apporter réconfort et sécurité à un élève victime d'intimidations répétées.", f:"https://cdn.reseau-canope.fr/medias/canotech/canotech_harcelement_mpp_deuxieme_episode-720p.mp4", p:"https://www.canotech.fr/medias/vignette-vignette-N-34106-1089392-XXL.jpg", u:"a/34106/methode-de-la-preoccupation-partagee-2-rencontres-avec-leleve-cible"},
+  mpp3:{t:"Méthode de la préoccupation partagée #3. Rencontres avec les intimidateurs", d:"5 min", k:"Reportage", s:"Comment la méthode associe les élèves intimidateurs au règlement de la situation.", f:"https://cdn.reseau-canope.fr/medias/canotech/canotech_harcelement_mpp_troisi%C3%A8me_episode-720p.mp4", p:"https://www.canotech.fr/medias/vignette-vignette-N-34107-1115202-XXL.jpg", u:"a/34107/methode-de-la-preoccupation-partagee-3-rencontres-avec-les-intimidateurs"},
+  mppcom:{t:"Lutter contre le harcèlement : un enjeu pour toute la communauté éducative", d:"5 min", k:"Témoignage", s:"Ce qu'apporte la méthode de la préoccupation partagée aux élèves, aux familles et aux personnels.", f:"https://videos.reseau-canope.fr/canotech/canotech_harcelement_itw_n_cras_enjeu_communaute_educative-720p.mp4", p:"https://www.canotech.fr/medias/p.canotech_harcelement_itw_n_cras_enjeu_communaute_educative2-XXL.jpg", u:"a/31383/lutter-contre-le-harcelement-un-enjeu-pour-toute-la-communaute-educative"},
+  meca:{t:"Les mécanismes en jeu dans une situation de harcèlement", d:"4 min", k:"Animation", s:"Les mécanismes du harcèlement à travers l'histoire d'un conflit entre deux collégiens.", f:"https://cdn.reseau-canope.fr/medias/canotech/canotech_harcelement_animation_dynamique_situation-720p.mp4", p:"https://www.canotech.fr/medias/canotech_harcelementdynamiquesituation_VIG-XXL.webp", u:"a/40296/les-mecanismes-en-jeu-dans-une-situation-de-harcelement"},
+  ecueils:{t:"Lutter contre le harcèlement : comprendre les enjeux, éviter les écueils", d:"5 min", k:"Parole d'expert", s:"En quoi le harcèlement est un phénomène de groupe, et comment les personnels peuvent le contrer.", f:"https://cdn.reseau-canope.fr/medias/canotech/canotech_harcelement_m_quartier_eviter_ecueils-720p.mp4", p:"https://www.canotech.fr/medias/vignette-vignette-N-32497-811432-XXL.jpg", u:"a/32497/lutter-contre-le-harcelement-comprendre-les-enjeux-eviter-les-ecueils"},
+  enjeux:{t:"Les enjeux du programme pHARe", d:"5 min", k:"Animation", s:"Pourquoi généraliser un programme de lutte contre le harcèlement entre pairs au niveau national.", f:"https://videos.reseau-canope.fr/canotech/canotech_harcelement_animation_enjeux_programme_phare-720p.mp4", p:"https://www.canotech.fr/medias/vignette-vignette-N-32052-789922-XXL.jpg", u:"a/32052/les-enjeux-du-programme-phare"},
+  ecole:{t:"Lutter contre le harcèlement : une illustration concrète en école primaire", d:"9 min", k:"Reportage", s:"La mise en place de pHARe dans une école primaire.", f:"https://videos.reseau-canope.fr/canotech/canotech_harcelement_illustration_concrete_ecole_primaire-720p.mp4", p:"https://www.canotech.fr/medias/p.canotech_harcelement_illustration_concrete_ecole_primaire2-XXL.jpg", u:"a/31385/lutter-contre-le-harcelement-une-illustration-concrete-en-ecole-primaire"},
+  college:{t:"Lutter contre le harcèlement : une illustration concrète en collège", d:"durée sur CanoTech", k:"Reportage", s:"La mise en place de pHARe dans un collège.", f:"https://videos.reseau-canope.fr/canotech/canotech_harcelement_illustration_concrete_college-720p.mp4", p:"https://www.canotech.fr/medias/vignette-vignette-N-32305-801362-XXL.jpg", u:"a/32305/lutter-contre-le-harcelement-une-illustration-concrete-en-college"}
+};
+const VID = id => { const v = VIDEOS[id]; return `<figure class="vid"><video controls preload="none" playsinline poster="${v.p}" src="${v.f}"></video><figcaption><b>${v.t}</b><span>${v.k} · ${v.d} · Réseau Canopé (CanoTech)</span><span>${v.s}</span><a href="https://www.canotech.fr/${v.u}" target="_blank" rel="noopener">Si la vidéo ne se lance pas, la voir sur CanoTech</a></figcaption></figure>`; };
+
 const ELCS = n => "http://enquetes.diplomatie.gouv.fr/index.php/" + n + "?lang=fr";
 
 // ---------- Rubriques ----------
 const RUBS = [
-  {n:"1", id:"comprendre", t:"Comprendre", pages:["c1","c2","c3","c4","c5"]},
+  {n:"1", id:"comprendre", t:"Comprendre", pages:["c1","c2","c3","c4","c5","c6","c7","c8"]},
   {n:"2", id:"prevenir", t:"Prévenir", pages:["p1","p2","p6","p7","p8","p3","p4","p5"]},
   {n:"3", id:"reperer", t:"Repérer et diagnostiquer", pages:["r1","r2","r3","r4"]},
-  {n:"4", id:"gerer", t:"Gérer une situation", pages:["g1","g2","g3","g4","g5","g6","g7"], alert:true},
+  {n:"4", id:"gerer", t:"Gérer une situation", pages:["g1","g2","g3","g4","g5","g6","g7","g8"], alert:true},
   {n:"5", id:"piloter", t:"Piloter pHARe", pages:["pi1","pi7","pi2","pi3","pi4","pi5","pi6"]},
   {n:"6", id:"communiquer", t:"Communiquer", pages:["co1","co5","co2","co3","co4"]},
-  {n:"7", id:"former", t:"Former les équipes", pages:["f1","f5","f2","f6","f3","f4","f7","f8"]}
+  {n:"7", id:"former", t:"Former les équipes", pages:["f1","f5","f2","f6","f3","f4","f7","f8","f9"]}
 ];
 
 // ---------- Outils (boîte à outils) ----------
@@ -499,16 +530,18 @@ body:`
 <li>La prévention et la gestion des violences et du harcèlement.</li>
 </ol>
 <p>Ces facteurs sont interdépendants : agir sur le climat, c'est agir sur l'ensemble de l'organisation, en combinant plusieurs leviers. Plus que des actions exceptionnelles, ce sont des pratiques quotidiennes qui font la différence. Le détail des leviers est dans <a href="#p1">Agir sur le climat au quotidien</a>.</p>
+<div class="note"><b>Aller plus loin</b>La définition de référence, l'origine du concept et ce que le climat scolaire n'est pas : <a href="#c7">1.7</a>. La justice scolaire : <a href="#c8">1.8</a>.</div>
 <h2>Pourquoi c'est une priorité</h2>
 <p>La recherche établit le lien entre climat scolaire, qualité des apprentissages et victimation. Un climat positif s'accompagne de meilleurs résultats scolaires, d'un bien-être accru des élèves et des adultes, d'une diminution du harcèlement et des problèmes de discipline, de moindres inégalités, d'équipes plus stables, et d'une baisse de l'absentéisme et du décrochage.</p>
 <div class="note"><b>Climat scolaire et pHARe</b>Le programme pHARe n'est pas un dispositif isolé : c'est le volet « harcèlement » d'une politique d'amélioration du climat scolaire. Son niveau de labellisation le plus élevé consiste précisément à s'engager dans un processus d'amélioration du climat scolaire.</div>`,
-tools:["t-memo","t-guide-cs","t-fiches-edu","t-cs-eduscol"], links:[CT("a/34104/le-bien-etre-a-lecole","Le bien-être à l'école")], see:["c4","c5","p1","r3","pi1"]},
+tools:["t-memo","t-guide-cs","t-fiches-edu","t-cs-eduscol"], links:[CT("a/34104/le-bien-etre-a-lecole","Le bien-être à l'école")], see:["c7","c8","c4","c5","p1","r3","pi1"]},
 
 c2:{rub:"comprendre", n:"1.2", t:"Qu'est-ce que le harcèlement scolaire ?", s:"Le harcèlement est une violence répétée, verbale, physique ou psychologique, exercée par un ou plusieurs élèves sur un élève qui ne peut pas se défendre dans ce contexte. Trois critères : la répétition, la durée, la disproportion des forces.", pub:["Tous"], src:"Protocole national 2023 ; guide des ambassadeurs pHARe 2021",
 body:`
 <h2>Définition</h2>
 <p>Au sein d'un groupe d'élèves, le harcèlement est une violence répétitive physique, verbale ou psychologique perpétrée, sur la durée, par un ou plusieurs auteurs à l'encontre d'un élève qui est dans l'incapacité de se défendre dans ce contexte précis.</p>
 <p>Cumulés et répétés, des faits qui passent souvent inaperçus des adultes peuvent avoir des conséquences d'une particulière gravité. C'est pourquoi une situation signalée n'est jamais minimisée, même lorsqu'elle est difficile à qualifier.</p>
+<div class="note"><b>Aller plus loin</b>Les définitions de la recherche, du programme pHARe et du droit (dont le délit de harcèlement scolaire) sont détaillées en <a href="#c6">1.6</a>.</div>
 <h2>Trois critères pour le reconnaître</h2>
 <div class="two">
 <div class="box"><h3>Répétition</h3><p>Les faits reviennent : moqueries quotidiennes, surnoms, bousculades, messages.</p></div>
@@ -535,7 +568,7 @@ body:`
 <h2>Vérifier sa compréhension : conflit ou harcèlement ?</h2>
 <p>Dix situations courtes, inspirées des cas travaillés en formation. Classez chacune, puis lisez la correction.</p>
 <div id="quiz" class="tree"></div>`,
-tools:["t-amb1d","t-harcelometre","t-violento"], links:[["Vidéo","Lutter contre le harcèlement : un enjeu pour toute la communauté éducative (CanoTech)","https://www.canotech.fr/a/31383/lutter-contre-le-harcelement-un-enjeu-pour-toute-la-communaute-educative"],["Vidéo","Le témoignage de Pierre, élève de 6e (Bellon, Gardette)","https://www.youtube.com/watch?v=QlxgmIxrexk"],["Source","Portail Non au harcèlement",NAH]], see:["c3","r1","urgence"]},
+tools:["t-amb1d","t-harcelometre","t-violento"], links:[["Vidéo","Lutter contre le harcèlement : un enjeu pour toute la communauté éducative (CanoTech)","https://www.canotech.fr/a/31383/lutter-contre-le-harcelement-un-enjeu-pour-toute-la-communaute-educative"],["Vidéo","Le témoignage de Pierre, élève de 6e (Bellon, Gardette)","https://www.youtube.com/watch?v=QlxgmIxrexk"],["Source","Portail Non au harcèlement",NAH]], see:["c6","c3","r1","urgence"]},
 
 c3:{rub:"comprendre", n:"1.3", t:"Pourquoi le harcèlement dure-t-il ?", s:"Le harcèlement entre élèves est une relation à trois : la cible, le ou les auteurs, et les pairs qui regardent. Il dure parce que la cible se tait, que les témoins ne savent pas quoi faire et que les adultes ne voient pas. Le groupe a le pouvoir de l'arrêter.", pub:["Enseignants","Vie scolaire","Équipe ressource"], src:"Guide des ambassadeurs pHARe 2021, module 2",
 body:`
@@ -1015,6 +1048,7 @@ tools:["t-eval","t-arbre","t-quandpas","t-mppoupas","t-harcelometre"], see:["g5"
 
 g5:{rub:"gerer", n:"4.5", t:"Comment traiter une situation de harcèlement ?", s:"Le traitement suit le protocole de l'établissement. La méthode de préoccupation partagée (MPP) est une manière de conduire les entretiens à l'intérieur de ce protocole : des entretiens individuels, non accusateurs et fermes, menés vite, pour faire cesser les brimades. Si cela ne suffit pas, la procédure disciplinaire prend le relais.", pub:["Équipe ressource","Direction"], src:"Protocole national 2023 ; MPP (Centre RéSIS) ; diaporama « Mise en œuvre de pHARe et de la MPP »",
 body:`
+<div class="note"><b>Comprendre la méthode</b>Les origines, les principes, le déroulé complet et quatre vidéos de Réseau Canopé sont dans la page <a href="#g8">4.8 La méthode de la préoccupation partagée expliquée</a>.</div>
 <div class="note"><b>Comment s'articulent protocole et MPP</b>Le protocole fixe le cadre : signalement, protection, analyse, entretiens, information des familles, réponse disciplinaire, suivi. La MPP est une modalité de conduite des entretiens, choisie par l'équipe ressource quand la situation s'y prête. Elle ne dispense jamais du cadre.</div>
 <h2>Les entretiens prévus par le protocole</h2>
 <ul>
@@ -1056,7 +1090,7 @@ body:`
 <p>La sanction seule ne met pas fin aux brimades : quand une sanction est prononcée, la cible doit être d'autant plus accompagnée.</p>
 <h2>L'action collective</h2>
 <p>Selon la situation, une action est menée auprès des classes concernées, voire de tout l'établissement : rappeler où et comment se confier, les règles et les valeurs de l'école, les canaux de signalement et les adultes de confiance. Un point non nominatif est fait dans les instances.</p>`,
-tools:["t-crestani","t-resis","t-versailles","t-quandpas","t-protocole","t-charte-mpp"], links:[CT("a/34105/methode-de-la-preoccupation-partagee-1-prise-en-charge-dun-cas-dintimidation","MPP 1 : prise en charge d'un cas d'intimidation"),CT("a/methode-de-la-preoccupation-partagee-2-rencontres-avec-leleve-cible","MPP 2 : rencontres avec l'élève cible"),CT("a/methode-de-la-preoccupation-partagee-3-rencontres-avec-les-intimidateurs","MPP 3 : rencontres avec les intimidateurs"),["Approfondissement","Découvrir la méthode (site de la préoccupation partagée)","https://www.preoccupationpartagee.org/decouvrir-la-methode/"],["Approfondissement","« Agir contre le harcèlement, une préoccupation partagée », conférence de J.-P. Bellon (Réseau Canopé)","https://www.reseau-canope.fr/notice/agir-contre-le-harcelement-une-preoccupation-partagee.html"],["Source","Portail Non au harcèlement",NAH]], see:["g4","g6","g7","f2"]},
+tools:["t-crestani","t-resis","t-versailles","t-quandpas","t-protocole","t-charte-mpp"], links:[CT("a/34105/methode-de-la-preoccupation-partagee-1-prise-en-charge-dun-cas-dintimidation","MPP 1 : prise en charge d'un cas d'intimidation"),CT("a/34106/methode-de-la-preoccupation-partagee-2-rencontres-avec-leleve-cible","MPP 2 : rencontres avec l'élève cible"),CT("a/34107/methode-de-la-preoccupation-partagee-3-rencontres-avec-les-intimidateurs","MPP 3 : rencontres avec les intimidateurs"),["Approfondissement","Découvrir la méthode (site de la préoccupation partagée)","https://www.preoccupationpartagee.org/decouvrir-la-methode/"],["Approfondissement","« Agir contre le harcèlement, une préoccupation partagée », conférence de J.-P. Bellon (Réseau Canopé)","https://www.reseau-canope.fr/notice/agir-contre-le-harcelement-une-preoccupation-partagee.html"],["Source","Portail Non au harcèlement",NAH]], see:["g8","g4","g6","g7","f2"]},
 
 g6:{rub:"gerer", n:"4.6", t:"Comment accompagner et suivre jusqu'à la résolution ?", s:"Une situation n'est close que lorsque la cible confirme que les brimades ont cessé. Le suivi concerne la cible, les auteurs et le groupe, et il est tracé dans un journal. La vigilance se prolonge : un élève peut rester fragilisé pendant des mois.", pub:["Équipe ressource","Direction"], src:"Protocole national 2023 ; fiches de suivi MPP (Centre RéSIS)",
 body:`
@@ -1562,7 +1596,7 @@ body:`
 <ol class="fsteps"><li>Mon état d'esprit après cette journée.</li><li>Ce que j'ai appris, ce dont j'ai pris conscience.</li><li>Mes attentes pour la seconde journée.</li><li>Les questions qui restent en suspens.</li></ol>
 <p>Chacun colle ses post-it sur quatre zones, une par question. Le formateur s'appuie sur les questions en suspens pour ouvrir le J2.</p>
 <p class="fdocs"><b>Documents</b> <a href="https://7a97dba91e3888ca1da6a61fcbbca2f5.cdn.bubble.io/f1731315023188x801976353559900700/evaluation%20de%20fin%20de%20journ%C3%A9e%20POST%20IT.pptx" target="_blank" rel="noopener">Support du bilan</a></p></div></details><details class="fiche"><summary><span class="fnum">14</span><span class="ftit">L'équipe ressource et la MPP : constituer son équipe</span><span class="fmeta">10 min + 25 min · Apports puis travail collaboratif</span></summary><div class="fbody"><p><b>Apports (10 min).</b> Composition de l'équipe pHARe, étapes pour la constituer, rôle de chaque membre, temps à consacrer au programme, communication.</p>
-<p><b>Qu'est-ce que la MPP ? (25 min).</b> Une vidéo, le diaporama, puis les deux autres vidéos. Le diaporama couvre les principes, les objectifs (prévention, désescalade, responsabilisation), le cadre éthique et la posture, ce que la MPP est et n'est pas.</p>
+<p><b>Qu'est-ce que la MPP ? (25 min).</b> Une vidéo, le diaporama, puis les deux autres vidéos (lisibles dans le site : <a href="#g8">4.8</a> ou <a href="#f9">vidéothèque</a>). Le diaporama couvre les principes, les objectifs (prévention, désescalade, responsabilisation), le cadre éthique et la posture, ce que la MPP est et n'est pas.</p>
 <ol class="fsteps">
 <li><b>Constituer l'équipe (travail collaboratif).</b> Quels profils peuvent l'intégrer (enseignants, CPE, AED, direction, infirmière…) ? Quels rôles et quelles complémentarités ? Comment fonctionner : coordination, confidentialité, continuité ?</li>
 <li><b>Lire la carte mentale de l'entretien.</b> Structure de l'entretien individuel ; questions ouvertes, non accusatoires, responsabilisantes ; vigilance sur les formulations ; articulation entre les entretiens.</li>
@@ -1649,7 +1683,238 @@ body:`
 <h2>Sommaire des fiches</h2>
 <div class="tbl"><table><thead><tr><th>N°</th><th>Activité</th><th>Durée</th><th>Modalité</th></tr></thead><tbody><tr><td>1</td><td>Le climat scolaire, ça se ressent (brise-glace)</td><td>10 min</td><td>Plénière</td></tr><tr><td>2</td><td>Atelier des 15 situations : analyser avant de juger</td><td>40 min + 15 min de restitution</td><td>Groupes</td></tr><tr><td>3</td><td>Quelles solutions mettre en œuvre ? Prioriser</td><td>15 min + 15 min de retours</td><td>Individuel puis collectif</td></tr><tr><td>4</td><td>Jeu du climat scolaire (ZAN)</td><td>20 min</td><td>Groupes · facultatif</td></tr><tr><td>5</td><td>Les mots du climat scolaire (photolangage)</td><td>30 min</td><td>Individuel puis groupe</td></tr><tr><td>6</td><td>World Café express : définir le harcèlement</td><td>15 min (créneau de 30 min)</td><td>4 tables · groupes de 4 à 5</td></tr><tr><td>7</td><td>Séquence « information sur le harcèlement » en 5 temps</td><td>60 min</td><td>Individuel puis plénière</td></tr><tr><td>8</td><td>4 situations de harcèlement : réflexion préharcèlement</td><td>40 min</td><td>Groupes</td></tr><tr><td>9</td><td>Reconnaître les signaux de harcèlement en 4 temps</td><td>60 min</td><td>Groupes</td></tr><tr><td>10</td><td>Comment agir pour améliorer le climat scolaire ?</td><td>45 min + 15 min d'apports</td><td>Groupes</td></tr><tr><td>11</td><td>Échanges de pratiques</td><td>20 min (J1) + 10 min (J2)</td><td>Collaboration</td></tr><tr><td>12</td><td>Présenter pHARe en 5 temps</td><td>40 min</td><td>Plénière</td></tr><tr><td>13</td><td>Bilan de journée : 4 post-it</td><td>15 min</td><td>Individuel, anonyme</td></tr><tr><td>14</td><td>L'équipe ressource et la MPP : constituer son équipe</td><td>10 min + 25 min</td><td>Apports puis travail collaboratif</td></tr><tr><td>15</td><td>MPP ou pas MPP ?</td><td>15 à 30 min</td><td>Groupes</td></tr><tr><td>16</td><td>3 situations complexes à gérer avec la MPP</td><td>90 min</td><td>Groupes</td></tr><tr><td>17</td><td>Je me forme à la MPP : micro-scénettes</td><td>40 à 50 min</td><td>Trios</td></tr><tr><td>18</td><td>Mettre au point la MPP face à des situations de harcèlement</td><td>40 min + 10 min de bilan</td><td>Groupes</td></tr><tr><td>19</td><td>Je prépare ma formation d'ambassadeurs pHARe</td><td>40 min + 2 × 5 min</td><td>Groupes (3 modules)</td></tr><tr><td>20</td><td>Mettre en œuvre pHARe dans son établissement</td><td>90 min</td><td>Groupes, un thème chacun</td></tr><tr><td>21</td><td>Mesurer le climat : l'enquête locale (ELCS)</td><td>30 min</td><td>Apports</td></tr><tr><td>22</td><td>Bilan de formation</td><td>15 min</td><td>Synthèse</td></tr></tbody></table></div>
 `,
-tools:["t-15sit","t-grille7","t-mppoupas","t-3sit","t-scenettes","t-atelier-mpp","t-charte-mpp","t-quandpas","t-reperage","t-eval","t-violento","t-harcelometre","t-fiches-amb","t-kits","t-elcs-fiche","t-gamma","t-padlets"], see:["f1","f2","f3","f6","f7"]}
+tools:["t-15sit","t-grille7","t-mppoupas","t-3sit","t-scenettes","t-atelier-mpp","t-charte-mpp","t-quandpas","t-reperage","t-eval","t-violento","t-harcelometre","t-fiches-amb","t-kits","t-elcs-fiche","t-gamma","t-padlets"], see:["f1","f2","f3","f6","f7","f9"]},
+
+c6:{rub:"comprendre", n:"1.6", t:"Le harcèlement : définitions de référence", s:"Le harcèlement entre élèves est défini par la recherche, par le droit et par les textes de l'Éducation nationale. Les trois convergent sur trois critères : des agressions répétées, inscrites dans la durée, dans un rapport de force où la cible ne peut pas se défendre. Le droit français en fait un délit depuis 2022.", pub:["Tous","Formateurs"], src:"Code de l'éducation, art. L.111-6 ; Code pénal, art. 222-33-2-2 et 222-33-2-3 (loi du 2 mars 2022) ; D. Olweus ; C. Salmivalli ; programme pHARe",
+body:`
+<p>Cette page sert d'apport théorique en formation. Elle complète la page <a href="#c2">1.2</a> (reconnaître le harcèlement) et la page <a href="#c3">1.3</a> (pourquoi il dure). Le bouton « Projeter » l'affiche en grand.</p>
+<h2>1. La définition de la recherche</h2>
+<div class="def"><p>« Un élève est victime de harcèlement lorsqu'il est exposé de manière répétée et à long terme à des actions négatives de la part d'un ou de plusieurs autres élèves. »</p><p class="who">Dan Olweus, psychologue norvégien, à l'origine des travaux sur le harcèlement scolaire (années 1970 à 1990).</p></div>
+<p>Olweus ajoute une condition décisive : un <b>déséquilibre des forces</b>. Il n'y a pas harcèlement quand deux élèves de force comparable se disputent ou se battent. Le harcèlement commence quand l'un ne peut plus se défendre, parce qu'il est seul face à un groupe, plus jeune, isolé ou atteint dans ce qu'il est.</p>
+<div class="two">
+<div class="box"><h3>Répétition</h3><p>Ce n'est pas un acte isolé. C'est l'accumulation de petits faits, souvent anodins pris un par un, qui détruit.</p></div>
+<div class="box"><h3>Durée</h3><p>Les faits s'installent : semaines, mois, parfois années. La cible finit par croire que la situation est normale ou méritée.</p></div>
+<div class="box"><h3>Asymétrie</h3><p>Un rapport de domination : la cible ne peut pas répondre. C'est ce qui distingue le harcèlement du conflit.</p></div>
+</div>
+<p>Les chercheurs distinguent le harcèlement <b>direct</b> (coups, insultes, menaces) et le harcèlement <b>indirect ou relationnel</b> (rumeurs, mise à l'écart, exclusion du groupe). Ce second type est le moins visible des adultes, et souvent le plus destructeur.</p>
+
+<h2>2. Un phénomène de groupe</h2>
+<p>La chercheuse finlandaise Christina Salmivalli a montré que le harcèlement n'est pas un duel entre un agresseur et une victime. C'est une situation de groupe, dans laquelle chaque élève présent joue un rôle :</p>
+<div class="tbl"><table><thead><tr><th>Rôle</th><th>Ce qu'il fait</th><th>Effet sur la situation</th></tr></thead><tbody>
+<tr><td><b>Le ou les initiateurs</b></td><td>Lancent les moqueries, les mises à l'écart.</td><td>Donnent le ton.</td></tr>
+<tr><td><b>Les suiveurs</b></td><td>Participent, imitent, relaient.</td><td>Amplifient.</td></tr>
+<tr><td><b>Les supporters</b></td><td>Rient, encouragent, regardent.</td><td>Donnent un public et une récompense.</td></tr>
+<tr><td><b>Les témoins silencieux</b></td><td>Ne disent rien, s'éloignent.</td><td>Leur silence est lu comme un accord.</td></tr>
+<tr><td><b>Les défenseurs</b></td><td>Soutiennent la cible, alertent un adulte.</td><td>Peuvent faire cesser la situation.</td></tr>
+</tbody></table></div>
+<p>C'est pourquoi pHARe forme des ambassadeurs et travaille avec les classes : <b>le groupe qui entretient le harcèlement est aussi celui qui peut l'arrêter</b>. C'est aussi pourquoi la <a href="#g8">méthode de la préoccupation partagée</a> rencontre les élèves un par un : seul, un élève sort de la dynamique du groupe.</p>
+<p><b>Les mécanismes qui font durer le harcèlement</b> :</p>
+<ul>
+<li><b>La diffusion de la responsabilité</b> : quand tout le monde voit, chacun pense que quelqu'un d'autre agira.</li>
+<li><b>Le conformisme</b> : on suit le groupe pour ne pas devenir à son tour la cible.</li>
+<li><b>Le désengagement moral</b> : « c'est pour rire », « il l'a cherché », « tout le monde le fait ». Ces phrases permettent de faire du mal sans se sentir coupable.</li>
+<li><b>La loi du silence</b> : la cible se tait par honte, par peur des représailles ou pour ne pas inquiéter ses parents ; les témoins se taisent pour ne pas être des « balances ».</li>
+</ul>
+${VID("meca")}
+
+<h2>3. La définition du programme pHARe</h2>
+<div class="def"><p>Le harcèlement est une violence répétitive, physique, verbale ou psychologique, perpétrée sur la durée par un ou plusieurs élèves à l'encontre d'un élève qui est dans l'incapacité de se défendre dans ce contexte précis.</p><p class="who">Formulation des supports pHARe et du protocole de traitement des situations.</p></div>
+<p>Le cyberharcèlement est la même violence, exercée par les outils numériques : messages, publications, exclusion des groupes de discussion, diffusion de photos ou de vidéos. Il ne s'arrête ni à la sortie de l'établissement ni le soir, il touche un public potentiellement illimité, et un seul partage suffit à installer la répétition.</p>
+
+<h2>4. Ce que dit le droit français</h2>
+<p><b>Le droit à une scolarité sans harcèlement</b> est inscrit dans le Code de l'éducation depuis 2019. Depuis la loi du 2 mars 2022, l'article L.111-6 précise :</p>
+<div class="def"><p>« Aucun élève ou étudiant ne doit subir de faits de harcèlement résultant de propos ou comportements, commis au sein de l'établissement d'enseignement ou en marge de la vie scolaire ou universitaire et ayant pour objet ou pour effet une dégradation de ses conditions d'apprentissage. »</p><p class="who">Code de l'éducation, article L.111-6.</p></div>
+<p>Le même article demande aux établissements de prendre les mesures de prévention, de détection et de traitement, et d'informer chaque année élèves et parents des risques du harcèlement et du cyberharcèlement. La loi prévoit aussi la formation de tous les personnels.</p>
+<p><b>Le délit de harcèlement scolaire</b> (Code pénal, article 222-33-2-3) reprend la définition du harcèlement moral : des propos ou comportements <b>répétés</b> qui dégradent les conditions de vie de la victime et altèrent sa santé physique ou mentale. Deux précisions comptent particulièrement pour l'école :</p>
+<ul>
+<li>Le délit est constitué même quand <b>chaque auteur n'a agi qu'une fois</b>, dès lors que plusieurs personnes ont visé la même victime de manière concertée ou à l'instigation de l'une d'elles. Le « like » ou le partage d'un message s'inscrit dans cette logique.</li>
+<li>Il s'applique aussi lorsque les faits <b>continuent après que l'auteur ou la victime a quitté l'établissement</b>.</li>
+</ul>
+<div class="tbl"><table><thead><tr><th>Conséquence pour la victime</th><th>Peine maximale encourue</th></tr></thead><tbody>
+<tr><td>Incapacité totale de travail (ITT) de 8 jours au plus, ou aucune ITT</td><td>3 ans d'emprisonnement et 45 000 € d'amende</td></tr>
+<tr><td>ITT de plus de 8 jours</td><td>5 ans et 75 000 €</td></tr>
+<tr><td>Suicide ou tentative de suicide</td><td>10 ans et 150 000 €</td></tr>
+</tbody></table></div>
+<p>Ces peines sont celles prévues pour les majeurs ; pour les mineurs s'appliquent les règles propres à la justice des mineurs, qui privilégient les mesures éducatives.</p>
+<div class="note"><b>Dans un établissement du réseau AEFE</b>Le droit français fixe le cadre de référence éducatif du réseau. Mais hors de France, ce sont d'abord la loi pénale et les obligations de signalement du pays d'accueil qui s'appliquent aux faits. Chaque établissement précise dans son <a href="#pi3">protocole</a> ce qu'il fait, à qui il s'adresse et dans quels délais, au regard de sa législation locale.</div>
+
+<h2>5. Ce que le harcèlement n'est pas, et les idées reçues</h2>
+<div class="tbl"><table><thead><tr><th>Idée reçue</th><th>Ce qu'il faut répondre</th></tr></thead><tbody>
+<tr><td>« Ça forge le caractère. »</td><td>Le harcèlement abîme durablement : anxiété, dépression, décrochage, perte d'estime de soi, qui peuvent persister à l'âge adulte.</td></tr>
+<tr><td>« Ce sont des histoires d'enfants. »</td><td>C'est une violence, et la loi en fait un délit. Les adultes ont l'obligation d'agir.</td></tr>
+<tr><td>« Il n'a qu'à se défendre. »</td><td>Par définition, la cible ne le peut pas. Lui demander de se défendre, c'est la rendre responsable de ce qu'elle subit.</td></tr>
+<tr><td>« Il y a des élèves qui attirent les problèmes. »</td><td>N'importe quel élève peut être ciblé. Le prétexte (une différence, une réussite, un changement) est choisi par le groupe ; il n'explique rien. pHARe demande de ne jamais présenter de « profil » de victime.</td></tr>
+<tr><td>« Il faut les mettre face à face pour qu'ils s'expliquent. »</td><td>Non. La médiation suppose deux élèves à égalité ; elle expose la cible à son agresseur. Elle est exclue en cas de harcèlement.</td></tr>
+<tr><td>« Si c'était grave, il nous l'aurait dit. »</td><td>La plupart des cibles ne parlent pas, ou très tard. D'où l'importance des <a href="#r1">signaux faibles</a>.</td></tr>
+</tbody></table></div>
+<p>Le harcèlement touche aussi les <b>auteurs</b> (risque accru de conduites violentes plus tard) et les <b>témoins</b> (anxiété, sentiment d'impuissance, perte de confiance dans les adultes). C'est un problème de tout l'établissement, pas d'un élève.</p>
+${VID("ecueils")}`,
+tools:["t-livret-ref","t-harcelometre","t-violento","t-karpman"], links:[["Source","Qu'est-ce que le harcèlement ? Définitions et cadre légal (ministère)","https://www.education.gouv.fr/non-au-harcelement/qu-est-ce-que-le-harcelement-325361"],["Texte","Code pénal, article 222-33-2-3, sur Légifrance","https://www.legifrance.gouv.fr/search/code?query=222-33-2-3"],["Source","Portail Non au harcèlement",NAH]], see:["c2","c3","g8","r1"]},
+
+c7:{rub:"comprendre", n:"1.7", t:"Le climat scolaire : comprendre le concept", s:"Le climat scolaire désigne la qualité et le caractère de la vie dans un établissement, tels que les vivent les élèves, les personnels et les familles. Ce n'est ni l'ambiance du moment ni le niveau de discipline : c'est un ensemble de normes, de relations et de pratiques, qui se mesure et sur lequel une équipe peut agir.", pub:["Tous","Formateurs"], src:"National School Climate Center (Cohen et al., 2009) ; travaux d'É. Debarbieux ; éduscol, climat scolaire (2026)",
+body:`
+<p>Cette page approfondit la page <a href="#c1">1.1</a>. Elle peut servir d'apport après le brise-glace « Le climat scolaire, ça se ressent » (<a href="#f8">fiche 1</a>).</p>
+<h2>1. D'où vient la notion</h2>
+<p>L'idée qu'un établissement a un « climat » propre, qui influence les apprentissages, est ancienne. La recherche s'en est saisie de façon systématique à partir des années 1970, aux États-Unis puis en Europe. En France, la notion s'est imposée au début des années 2010, notamment à partir des enquêtes de victimation et des travaux d'Éric Debarbieux sur la violence à l'école. Le ministère en a fait un axe de politique éducative, décliné aujourd'hui en sept facteurs.</p>
+<h2>2. Une définition de référence</h2>
+<div class="def"><p>Le climat scolaire désigne la qualité et le caractère de la vie à l'école. Il repose sur les expériences que les élèves, les parents et les personnels font de la vie scolaire, et il reflète les normes, les objectifs, les valeurs, les relations interpersonnelles, les pratiques d'enseignement et d'apprentissage, et les structures organisationnelles.</p><p class="who">National School Climate Center (Cohen, McCabe, Michelli et Pickeral, 2009), traduction.</p></div>
+<p>Trois mots de cette définition sont à expliquer en formation :</p>
+<ul>
+<li><b>Expériences</b> : le climat est un <b>vécu</b>, subjectif et collectif. Deux adultes peuvent décrire le même établissement très différemment ; un élève isolé ne vit pas le même climat que ses camarades. C'est pour cela qu'on interroge tous les publics.</li>
+<li><b>Normes et valeurs</b> : ce qui se fait et ne se fait pas, souvent sans être écrit. Une règle affichée mais jamais appliquée crée une norme : « ici, on peut ».</li>
+<li><b>Structures</b> : l'emploi du temps, les espaces, la surveillance, l'organisation des récréations, la circulation de l'information. Le climat ne dépend pas que des personnes ; il dépend aussi de l'organisation.</li>
+</ul>
+<h2>3. Ce que le climat scolaire n'est pas</h2>
+<div class="tbl"><table><thead><tr><th>Ce n'est pas…</th><th>parce que…</th></tr></thead><tbody>
+<tr><td>L'ambiance du jour</td><td>Le climat est durable ; il se construit et se dégrade sur des mois.</td></tr>
+<tr><td>Une question de discipline</td><td>Un établissement très « tenu » peut avoir un climat dégradé si les élèves s'y sentent injustement traités ou seuls.</td></tr>
+<tr><td>L'affaire des seuls élèves</td><td>Le bien-être des personnels, la cohérence de l'équipe et la relation avec les familles en font partie.</td></tr>
+<tr><td>Une moyenne</td><td>Un bon score global peut masquer un groupe, un lieu ou un moment où des élèves vont mal. Il faut lire les écarts (voir <a href="#r3">l'ELCS</a>).</td></tr>
+<tr><td>Un projet à part</td><td>Il traverse toutes les pratiques ordinaires : la façon d'accueillir, de noter, de punir, de parler aux familles.</td></tr>
+</tbody></table></div>
+<h2>4. Pourquoi il est central</h2>
+<p>La recherche internationale associe un climat scolaire positif à de meilleurs apprentissages, à moins de violence et de harcèlement, à moins d'absentéisme et de décrochage, au bien-être des élèves et à la stabilité des équipes. Le lien fonctionne dans les deux sens : la violence dégrade le climat, et un climat dégradé favorise la violence. C'est ce cercle qu'une équipe cherche à inverser.</p>
+<p>Le harcèlement en est un bon exemple. Il prospère là où les adultes ne sont pas cohérents, où des lieux échappent à leur regard, où les élèves pensent que parler ne sert à rien. Prévenir le harcèlement, c'est donc d'abord agir sur le climat.</p>
+<h2>5. Les sept facteurs, avec leur question clé</h2>
+<div class="tbl"><table><thead><tr><th>Facteur</th><th>Question à poser à l'équipe</th></tr></thead><tbody>
+<tr><td><b>Stratégie d'équipe</b></td><td>Les adultes appliquent-ils les mêmes règles et tiennent-ils le même discours ?</td></tr>
+<tr><td><b>Pédagogie et coopération</b></td><td>Les élèves apprennent-ils aussi à travailler ensemble, et chacun a-t-il une place en classe ?</td></tr>
+<tr><td><b>Qualité de vie</b></td><td>Les temps et les lieux (cour, cantine, couloirs, internat) sont-ils pensés et surveillés ?</td></tr>
+<tr><td><b>Coéducation</b></td><td>Les familles sont-elles des partenaires, et pas seulement des destinataires d'information ?</td></tr>
+<tr><td><b>Partenariats</b></td><td>L'établissement s'appuie-t-il sur des ressources extérieures (santé, associations, collectivités) ?</td></tr>
+<tr><td><b>Justice scolaire</b></td><td>Les règles sont-elles claires, expliquées et appliquées avec équité ? (voir <a href="#c8">1.8</a>)</td></tr>
+<tr><td><b>Prévention des violences et du harcèlement</b></td><td>Les élèves savent-ils à qui parler, et les adultes savent-ils quoi faire ?</td></tr>
+</tbody></table></div>
+<div class="note"><b>Pour la formation</b>Faites associer chaque situation de l'<a href="#f8">atelier des 15 situations</a> à un ou deux facteurs : les stagiaires voient ainsi qu'un même problème a plusieurs causes, et donc plusieurs leviers.</div>`,
+tools:["t-memo","t-fiches-edu","t-guide-cs","t-elcs"], links:[["Source","Éduscol · Une École engagée en faveur du climat scolaire",EDU_CS],["Source","National School Climate Center","https://schoolclimate.org/"],CT("a/34104/le-bien-etre-a-lecole","Le bien-être à l'école")], see:["c1","c8","r3","p1"]},
+
+c8:{rub:"comprendre", n:"1.8", t:"Qu'est-ce que la justice scolaire ?", s:"La justice scolaire, c'est la manière dont les règles sont posées, appliquées et vécues dans l'établissement. Ce qui compte n'est pas seulement que les décisions soient justes, mais qu'elles soient perçues comme justes : un fort sentiment d'injustice nourrit la violence, le silence et le désengagement.", pub:["Tous","Direction","Vie scolaire"], src:"Éduscol, fiche « justice scolaire » ; circulaire n° 2014-059 du 27 mai 2014 (règles, punitions et sanctions)",
+body:`
+<h2>1. Une définition</h2>
+<div class="def"><p>La justice scolaire désigne l'ensemble des règles de vie de l'établissement, la façon dont elles sont élaborées, expliquées et appliquées, et le <b>sentiment de justice</b> qu'en retirent les élèves et les adultes.</p></div>
+<p>Elle est l'un des sept facteurs du climat scolaire. La recherche montre que les élèves qui se sentent injustement traités s'investissent moins, respectent moins les règles et font moins confiance aux adultes, y compris pour signaler une violence.</p>
+<h2>2. Trois dimensions du sentiment de justice</h2>
+<div class="tbl"><table><thead><tr><th>Dimension</th><th>La question que se pose l'élève</th><th>Exemples en établissement</th></tr></thead><tbody>
+<tr><td><b>Distributive</b></td><td>Est-ce que je reçois ce que je mérite, comme les autres ?</td><td>Notes, attention, prise de parole, punitions, responsabilités confiées.</td></tr>
+<tr><td><b>Procédurale</b></td><td>La décision a-t-elle été prise de façon correcte ?</td><td>Règles connues à l'avance, écoute de sa version, explication de la décision, possibilité de la contester.</td></tr>
+<tr><td><b>Relationnelle</b></td><td>Est-ce qu'on m'a traité avec respect ?</td><td>Ton, humiliation publique ou non, prise en compte de la personne derrière l'acte.</td></tr>
+</tbody></table></div>
+<p>Une sanction juste sur le fond peut être vécue comme injuste si elle est prononcée sans écoute ou devant la classe. À l'inverse, une décision difficile est mieux acceptée quand l'élève a été entendu et que la règle était connue.</p>
+<h2>3. Punition et sanction : ne pas confondre</h2>
+<div class="tbl"><table><thead><tr><th></th><th>Punition scolaire</th><th>Sanction disciplinaire</th></tr></thead><tbody>
+<tr><td><b>Pour quoi</b></td><td>Manquements mineurs, perturbations de la vie de la classe ou de l'établissement.</td><td>Atteintes aux personnes et aux biens, manquements graves ou répétés.</td></tr>
+<tr><td><b>Qui décide</b></td><td>Les personnels, dans le cadre du règlement intérieur.</td><td>Le chef d'établissement ou le conseil de discipline.</td></tr>
+<tr><td><b>Comment</b></td><td>Mesure d'ordre intérieur, sans procédure formelle.</td><td>Procédure obligatoire, inscription au dossier de l'élève.</td></tr>
+</tbody></table></div>
+<h2>4. Les principes du droit disciplinaire</h2>
+<p>Dans le cadre réglementaire français (circulaire du 27 mai 2014), toute sanction respecte cinq principes :</p>
+<ol class="steps">
+<li><b>Légalité</b> : les fautes et les sanctions possibles sont écrites dans le règlement intérieur. On ne sanctionne pas ce qui n'est pas prévu.</li>
+<li><b>Contradictoire</b> : l'élève, avec ses représentants légaux, présente sa version avant toute décision. C'est une garantie pour lui comme pour l'institution.</li>
+<li><b>Proportionnalité</b> : la sanction est à la mesure de la gravité du manquement et constitue une réponse éducative adaptée.</li>
+<li><b>Individualisation</b> : on examine la responsabilité de chacun ; les punitions et sanctions collectives sont interdites.</li>
+<li><b>Non bis in idem</b> : on ne sanctionne pas deux fois les mêmes faits.</li>
+</ol>
+<p>La <b>mesure de responsabilisation</b> (activités éducatives, solidaires ou de réparation, en dehors des heures de cours) donne à la sanction un sens : comprendre la portée de son acte et réparer.</p>
+<div class="note"><b>Dans le réseau AEFE</b>Le régime disciplinaire dépend du statut de l'établissement et du droit du pays d'accueil. Les principes ci-dessus restent une référence de justice pour tous : règles écrites, écoute, proportion, responsabilité individuelle.</div>
+<h2>5. Justice scolaire et harcèlement</h2>
+<ul>
+<li><b>Le sentiment d'impunité fait taire.</b> Si les élèves pensent qu'un signalement ne change rien, ils ne parlent plus. La cohérence des réponses est un levier de prévention.</li>
+<li><b>La sanction seule ne protège pas.</b> Elle peut même provoquer des représailles discrètes. Quand une sanction est prononcée, la cible est d'autant plus accompagnée, et le suivi continue.</li>
+<li><b>Les punitions collectives sont proscrites</b> : elles soudent le groupe contre celui qui a parlé.</li>
+<li><b>Réparer n'est pas négocier.</b> Les démarches restauratives ont leur place après la cessation des faits, jamais sous la forme d'une confrontation entre la cible et l'auteur.</li>
+<li><b>La MPP n'est pas une sanction</b>, et elle ne l'exclut pas : si les faits persistent, la procédure disciplinaire prend le relais (voir <a href="#g8">4.8</a>).</li>
+</ul>
+<h2>6. Questions pour un atelier d'équipe</h2>
+<ul>
+<li>Nos élèves connaissent-ils les règles ? Les ont-ils discutées ?</li>
+<li>Appliquons-nous la même règle de la même façon d'un adulte à l'autre, d'une classe à l'autre ?</li>
+<li>Expliquons-nous nos décisions ? Écoutons-nous la version de l'élève ?</li>
+<li>Quelle place donnons-nous à la réparation ?</li>
+<li>Que disent les élèves de la justice dans l'<a href="#r3">enquête de climat scolaire</a> ?</li>
+</ul>`,
+tools:["t-fiches-edu","t-elcs"], links:[["Texte","Circulaire n° 2014-059 du 27 mai 2014 : règles, punitions et sanctions","https://www.education.gouv.fr/bo/14/Hebdo22/MENE1406107C.htm"],["Source","Fiche éduscol « justice scolaire » (PDF)","https://7a97dba91e3888ca1da6a61fcbbca2f5.cdn.bubble.io/f1716279404372x526621716408385100/fiche_cs_justice_scolaire.pdf"]], see:["c7","c1","p1","g5"]},
+
+g8:{rub:"gerer", n:"4.8", t:"La méthode de la préoccupation partagée expliquée", s:"La MPP ne cherche pas un coupable : elle cherche à faire cesser les brimades en rendant chaque intimidateur acteur de la solution. Ses entretiens individuels, courts et non accusateurs cassent la dynamique de groupe. Quatre vidéos de Réseau Canopé la montrent en situation, à projeter en formation.", pub:["Équipe ressource","Formateurs","Direction"], src:"Vidéos Réseau Canopé (CanoTech) ; J.-P. Bellon et B. Gardette, Centre RéSIS ; livret de formation MPP (académie de Normandie) ; programme pHARe",
+body:`
+<p>Cette page explique la méthode en profondeur. La conduite à tenir dans le protocole est en <a href="#g5">4.5</a> ; la décision d'y recourir, en <a href="#g4">4.4</a>.</p>
+<h2>1. Découvrir la méthode en vidéo</h2>
+<p>Trois épisodes courts de Réseau Canopé suivent une équipe ressource, de la prise en charge aux entretiens. À projeter dans l'ordre (12 minutes au total), puis à discuter.</p>
+${VID("mpp1")}
+<p><b>Questions après l'épisode 1</b> : qui intervient ? Pourquoi une équipe et pas un adulte seul ? Qu'est-ce qui surprend dans la posture ?</p>
+${VID("mpp2")}
+<p><b>Questions après l'épisode 2</b> : que fait l'adulte, et que s'interdit-il de faire ? Que dit-il à l'élève pour le rassurer ?</p>
+${VID("mpp3")}
+<p><b>Questions après l'épisode 3</b> : relevez les phrases de l'adulte. Lesquelles ouvrent le dialogue ? Comment réagit-il au déni ?</p>
+${VID("mppcom")}
+
+<h2>2. D'où vient la méthode</h2>
+<p>La méthode a été conçue par le psychologue suédois <b>Anatol Pikas</b> (en anglais <i>Method of Shared Concern</i>). Elle a été adaptée en France par <b>Jean-Pierre Bellon et Bertrand Gardette</b>, avec Marie Quartier, au sein de l'Association pour la prévention des phénomènes de harcèlement entre élèves et du Centre RéSIS. Le programme pHARe l'a retenue comme méthode de traitement des situations, à mettre en œuvre par l'équipe ressource formée.</p>
+<h2>3. Sur quoi elle repose</h2>
+<p>La méthode part de trois constats :</p>
+<ol class="steps">
+<li><b>L'intimidation est d'abord un phénomène de groupe.</b> Chaque élève fait des choses qu'il ne ferait pas seul.</li>
+<li><b>Les intimidateurs ne sont pas tous à l'aise dans leur rôle.</b> Beaucoup suivent pour ne pas être exclus ou ciblés à leur tour.</li>
+<li><b>La plupart souhaitent en sortir</b>, à condition de ne pas perdre la face.</li>
+</ol>
+<p>D'où le principe : rencontrer chaque élève <b>seul</b>, pour le sortir du groupe ; ne <b>pas l'accuser</b>, pour qu'il n'ait pas à se défendre ; lui faire <b>partager une inquiétude</b> pour la cible ; et lui demander ce qu'il peut faire. L'élève qui propose une solution s'engage davantage que celui à qui on impose une règle.</p>
+<div class="two">
+<div class="box"><h3>Pourquoi pas l'enquête ?</h3><p>Chercher des preuves pousse au déni et à la solidarité du groupe. Les élèves se mettent d'accord sur une version, et la cible est soupçonnée d'avoir parlé.</p></div>
+<div class="box"><h3>Pourquoi pas la sanction d'emblée ?</h3><p>Elle ne fait pas changer le groupe, expose la cible à des représailles et transforme les auteurs en victimes à leurs propres yeux.</p></div>
+</div>
+
+<h2>4. Le déroulé</h2>
+<div class="tbl"><table><thead><tr><th>Étape</th><th>Qui</th><th>Ce qui se passe</th></tr></thead><tbody>
+<tr><td><b>0. Réunion de l'équipe</b></td><td>Équipe ressource</td><td>On analyse la situation, on vérifie que la MPP est adaptée (<a href="#g4">arbre de décision</a>), on répartit les élèves à rencontrer. Un intervenant par entretien, jamais plusieurs.</td></tr>
+<tr><td><b>1. Rencontre avec la cible</b></td><td>Un membre de l'équipe</td><td>Accueillir, écouter, rassurer : « tu n'es pas seul, nous allons t'aider ». Mettre en place la protection. Ne pas donner de conseils (« ignore-les », « défends-toi »). Les parents sont informés et associés.</td></tr>
+<tr><td><b>2. Entretiens avec les intimidateurs présumés</b></td><td>Un intervenant par élève</td><td>Entretiens individuels, très brefs (quelques minutes). Phase 1 : faire partager la préoccupation. Phase 2 : recueillir des suggestions. Des élèves témoins ou « neutres » peuvent aussi être reçus.</td></tr>
+<tr><td><b>3. Deuxième série d'entretiens</b></td><td>Les mêmes intervenants</td><td>Quelques jours plus tard : les suggestions ont-elles été appliquées ? On valorise les efforts et on maintient la demande.</td></tr>
+<tr><td><b>4. Suivi de la cible</b></td><td>Le même membre</td><td>Les brimades ont-elles cessé ? Comment va-t-elle ? On la prépare à une éventuelle rechute, qui est fréquente et se traite.</td></tr>
+<tr><td><b>5. Suivi et clôture</b></td><td>Équipe ressource</td><td>Rencontres espacées sur plusieurs semaines ou mois. La situation est close quand la cible confirme que tout a cessé.</td></tr>
+</tbody></table></div>
+<p><b>Les conditions de réussite</b> : intervenir vite après le signalement ; des entretiens courts ; un traitement auprès des intimidateurs qui n'excède pas deux semaines ; des notes prises après chaque entretien, pas pendant.</p>
+
+<h2>5. L'entretien avec un intimidateur, phrase par phrase</h2>
+<div class="tbl"><table><thead><tr><th>Phase</th><th>Ce que dit l'adulte</th><th>Ce qu'il cherche</th></tr></thead><tbody>
+<tr><td>Ouverture</td><td class="quote">Je suis préoccupé au sujet de X. Qu'est-ce que tu peux m'en dire ?</td><td>Poser l'inquiétude, pas l'accusation.</td></tr>
+<tr><td>Si l'élève se braque</td><td class="quote">Rassure-toi, je ne suis pas là pour te juger ou te punir. Je suis inquiet pour lui.</td><td>Faire baisser la défense.</td></tr>
+<tr><td>Fin de la phase 1</td><td class="quote">Donc toi aussi, tu vois qu'il ne va pas bien.</td><td>Obtenir la reconnaissance du malaise de la cible.</td></tr>
+<tr><td>Phase 2</td><td class="quote">Je me demande ce qu'on pourrait faire pour qu'il se sente mieux. Tu aurais une idée ? Et toi, qu'est-ce que tu pourrais faire ?</td><td>Obtenir une proposition concrète de l'élève.</td></tr>
+<tr><td>Conclusion</td><td class="quote">Très bien. Tu vas le faire ? On se revoit dans quelques jours pour voir comment ça se passe.</td><td>Un engagement et un rendez-vous.</td></tr>
+</tbody></table></div>
+<p><b>Face au déni</b> (« c'est pas moi », « on rigolait », « tout le monde fait pareil ») : on ne contredit pas, on ne cherche pas de preuve. On revient à la préoccupation : « Je ne te demande pas qui a fait quoi. Je te dis que X ne va pas bien, et je te demande de m'aider. »</p>
+<div class="two">
+<div class="box"><h3>À faire</h3><ul><li>Courtoisie, calme, bienveillance</li><li>Sobriété : peu de mots</li><li>Fermeté : l'élève repart avec une demande</li><li>Ténacité : on revoit l'élève autant que nécessaire</li></ul></div>
+<div class="box"><h3>À éviter</h3><ul><li>S'adresser au groupe</li><li>Accuser, moraliser, menacer</li><li>Mener une enquête</li><li>Être plusieurs adultes face à l'élève</li><li>Forcer l'empathie ou exiger des excuses</li></ul></div>
+</div>
+
+<h2>6. Quand la MPP ne convient pas ou s'arrête</h2>
+<ul>
+<li><b>Pas de MPP</b> en cas de danger pour la cible, de violences à caractère sexuel ou de diffusion d'images intimes, ou de brimades racistes, antisémites, sexistes ou homophobes. Voir <a href="#g5">4.5</a>.</li>
+<li><b>Arrêt de la méthode</b> si des faits graves apparaissent, si plusieurs intimidateurs refusent de coopérer, ou si rien ne s'améliore après deux semaines. La direction reprend alors la situation et la procédure disciplinaire prévue par le règlement intérieur s'applique.</li>
+<li>Savoir ne pas utiliser la MPP est une compétence professionnelle (activité « MPP ou pas MPP » en <a href="#f8">7.8</a>).</li>
+</ul>
+<h2>7. Ce qu'il faut retenir</h2>
+<div class="note"><b>La MPP en une phrase</b>On ne cherche pas un coupable ; on cherche des alliés pour faire cesser une situation. Ce n'est ni une enquête, ni une médiation, ni une sanction, ni une négociation : c'est une posture, un langage commun et une stratégie d'équipe pour protéger les élèves.</div>`,
+tools:["t-resis","t-crestani","t-scenettes","t-charte-mpp","t-quandpas","t-atelier-mpp","t-mppoupas","t-versailles"], links:[["Approfondissement","Découvrir la méthode (site de la préoccupation partagée)","https://www.preoccupationpartagee.org/decouvrir-la-methode/"],["Approfondissement","Livret de formation à la MPP (académie de Normandie)","https://prim50.ac-normandie.fr/IMG/pdf/livret_de_formation_mpp-3.pdf"],["Approfondissement","« Agir contre le harcèlement, une préoccupation partagée », conférence de J.-P. Bellon (Réseau Canopé)","https://www.reseau-canope.fr/notice/agir-contre-le-harcelement-une-preoccupation-partagee.html"]], see:["g4","g5","g6","f8","c6"]},
+
+f9:{rub:"former", n:"7.9", t:"Vidéothèque : neuf vidéos à projeter", s:"Neuf vidéos courtes de Réseau Canopé, lisibles directement dans le site, pour illustrer une formation : les mécanismes du harcèlement, les enjeux de pHARe, sa mise en place en école et en collège, et la méthode de la préoccupation partagée.", pub:["Formateurs","Tous"], src:"Réseau Canopé, plateforme CanoTech",
+body:`
+<p>Les vidéos se lancent dans la page. Si un navigateur ou un réseau d'établissement bloque la lecture, le lien sous chaque vidéo l'ouvre sur CanoTech. Pour une salle sans connexion fiable, téléchargez-les à l'avance depuis CanoTech.</p>
+<h2>Comprendre le harcèlement</h2>
+<div class="vids">${VID("meca")}${VID("ecueils")}</div>
+<h2>Le programme pHARe</h2>
+<div class="vids">${VID("enjeux")}${VID("ecole")}${VID("college")}</div>
+<h2>La méthode de la préoccupation partagée</h2>
+<div class="vids">${VID("mpp1")}${VID("mpp2")}${VID("mpp3")}${VID("mppcom")}</div>
+<h2>Où les utiliser dans une formation</h2>
+<div class="tbl"><table><thead><tr><th>Moment</th><th>Vidéo</th></tr></thead><tbody>
+<tr><td>Apport « qu'est-ce que le harcèlement ? »</td><td>Les mécanismes en jeu ; comprendre les enjeux, éviter les écueils</td></tr>
+<tr><td>Présenter pHARe en 5 temps (<a href="#f8">fiche 12</a>)</td><td>Les enjeux du programme ; illustration en école primaire ; un enjeu pour toute la communauté éducative</td></tr>
+<tr><td>Ouverture du J2</td><td>Illustration concrète en école primaire ou en collège</td></tr>
+<tr><td>Qu'est-ce que la MPP ? (<a href="#f8">fiche 14</a>)</td><td>MPP #1, puis le diaporama, puis MPP #2 et #3</td></tr>
+</tbody></table></div>`,
+tools:["t-gamma","t-padlets"], links:[["Source","Série CanoTech « Lutter contre le harcèlement au 1er degré : le programme pHARe »","https://www.canotech.fr/serie/lutter-contre-le-harcelement-au-1er-degre-le-programme-phare"]], see:["g8","c6","f8","f1"]}
 };
 
 // ---------- Profils ----------
@@ -1659,14 +1924,14 @@ const PROFILES = {
   "Vie scolaire, CPE":["p6","r1","r2","p4","g3","g7"],
   "Direction":["c5","r3","r4","pi1","pi7","pi3","pi4"],
   "Équipe ressource":["g4","g5","g6","pi3","g7"],
-  "Formateur":["f1","f8","p8","f5","f2","f6","f7","outils"]
+  "Formateur":["f1","f8","f9","g8","c6","p8","f5","f2","f6","f7","outils"]
 };
 const SPACES = {
   "esp-enseignants":{t:"Espace enseignants", who:"Professeurs du premier et du second degré", intro:"Votre rôle : créer en classe des conditions qui protègent, repérer, accueillir la parole et transmettre le jour même. Vous ne traitez pas la situation seul.", pages:["c1","p7","p8","c2","r1","p3","g1","urgence"], tools:["t-cps-eduscol","t-cps-spf","t-reperage","t-harcelometre","t-10h","t-amb1d"], parcours:"decouverte", extra:["c2","Quiz : conflit ou harcèlement ?"]},
   "esp-equipe":{t:"Espace équipe ressource", who:"Membres de l'équipe ressource pHARe et coordonnateur", intro:"Votre rôle : analyser chaque situation en équipe, choisir la réponse, conduire les entretiens et suivre jusqu'à la résolution.", pages:["g4","g5","g6","g7","pi2","pi3","r4"], tools:["t-eval","t-arbre","t-resis","t-crestani","t-quandpas","t-livret-ref","t-plan90"], parcours:"equipe", extra:["g4","Arbre : MPP ou pas MPP ?"]},
   "esp-referents":{t:"Espace adultes référents des ambassadeurs", who:"CPE, vie scolaire, enseignants qui accompagnent les élèves ambassadeurs", intro:"Votre rôle : recruter, former et accompagner les ambassadeurs toute l'année, en garantissant le cadre : ils sensibilisent, repèrent et alertent, ils n'interviennent jamais dans une situation.", pages:["p4","f4","p5","c3","co4","f3"], tools:["t-livret-amb","t-pres-amb","t-fiches-amb","t-candidature","t-anim","t-amb1d"], parcours:"decouverte", extra:["p4","Répondre aux réticences des ambassadeurs"]},
   "esp-direction":{t:"Espace direction", who:"Chefs d'établissement, directeurs d'école, adjoints", intro:"Votre rôle : piloter le programme, garantir le protocole de l'établissement, décider des mesures de protection et des sanctions, appliquer les obligations légales du pays d'accueil.", pages:["c5","r3","r4","pi1","pi7","pi3","pi4","pi5","pi6"], tools:["t-trame-protocole","t-4pages","t-elcs","t-cs360","t-qui","t-plan90"], parcours:"equipe", extra:["pi7","Autodiagnostic pHARe"]},
-  "esp-formateurs":{t:"Espace formateurs", who:"Formateurs de zone, formateurs en établissement", intro:"Votre rôle : former les équipes et les référents à partir des pages de référence du site, sans dupliquer leurs contenus.", pages:["f1","f8","p8","f5","f2","f6","f3","f4","f7"], tools:["t-15sit","t-atelier-dgesco","t-3sit","t-atelier-mpp","t-mppoupas","t-anim","t-cps-spf","t-plan90"], parcours:"mpp", extra:["f6","Grille d'observation MPP"]}
+  "esp-formateurs":{t:"Espace formateurs", who:"Formateurs de zone, formateurs en établissement", intro:"Votre rôle : former les équipes et les référents à partir des pages de référence du site, sans dupliquer leurs contenus.", pages:["f1","f8","f9","c6","c7","c8","g8","p8","f5","f2","f6","f3","f4","f7"], tools:["t-15sit","t-atelier-dgesco","t-3sit","t-atelier-mpp","t-mppoupas","t-anim","t-cps-spf","t-plan90"], parcours:"mpp", extra:["f6","Grille d'observation MPP"]}
 };
 
 // ---------- Utilitaires ----------
@@ -1783,7 +2048,7 @@ function renderPage(id){
   const prev = idx>0 ? ORDER[idx-1] : null, next = idx>=0 && idx<ORDER.length-1 ? ORDER[idx+1] : null;
   let h = `<article class="col page">
   <div class="crumb"><a href="#accueil">Accueil</a><span>/</span>${r?`<span>${r.n}. ${esc(r.t)}</span><span>/</span><span>${p.n}</span>`:`<span>Accès urgence</span>`}</div>
-  <h1>${esc(p.t)}</h1>
+  <h1><button class="projbtn" id="projBtn" type="button" title="Afficher la page en grand pour la projeter en formation">${document.body.classList.contains("proj")?"Quitter la projection":"Projeter"}</button>${esc(p.t)}</h1>
   <div class="meta">${p.pub.map(x=>`<span class="chip">${esc(x)}</span>`).join("")}<span class="chip src">Réf. : ${esc(p.src)}</span></div>
   <div class="short"><span class="lbl">En 30 secondes</span>${esc(p.s)}</div>
   <div class="body">${p.body}</div>`;
@@ -1801,7 +2066,10 @@ function renderPage(id){
   if(id==="pi3") initProto();
   if(id==="r4") initPlan90();
   restoreChecks();
+  const pb=$("#projBtn"); if(pb) pb.addEventListener("click",()=>{ const on=document.body.classList.toggle("proj"); pb.textContent=on?"Quitter la projection":"Projeter"; window.scrollTo(0,0); });
 }
+document.addEventListener("error",e=>{ const v=e.target; if(!v || v.tagName!=="VIDEO" || v.dataset.failed) return; v.dataset.failed="1"; const fig=v.closest(".vid"); const a=fig&&fig.querySelector("figcaption a"); const box=document.createElement("a"); box.className="vid-off"; box.href=a?a.href:"#"; box.target="_blank"; box.rel="noopener"; box.innerHTML="<b>▶ Lire la vidéo sur CanoTech</b><span>La lecture intégrée est bloquée dans cet affichage. Elle fonctionne dans la version du site hébergée sur GitHub ou ouverte depuis votre ordinateur.</span>"; v.replaceWith(box); }, true);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && document.body.classList.contains("proj")){ document.body.classList.remove("proj"); const pb=document.getElementById("projBtn"); if(pb) pb.textContent="Projeter"; } });
 function restoreChecks(){
   document.querySelectorAll('.check input[type=checkbox]').forEach(cb=>{
     const k="cs-cb-"+cb.id; const v=store(k); if(v) cb.checked=true;
