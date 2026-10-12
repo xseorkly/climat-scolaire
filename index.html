@@ -622,7 +622,9 @@ function init(staticryptConfig, templateConfig) {
         if (!result.success) {
             return false;
         }
-        const plainHTML = result.decoded;
+        // Lien de formation injecté dans le HTML déchiffré avant remplacement de la page.
+        const formationLink = '<a href="./formation/" aria-label="Ouvrir la formation Climat scolaire et pHARe à Nicosie" style="position:fixed;right:22px;bottom:22px;z-index:2147483000;display:inline-flex;align-items:center;gap:9px;padding:14px 19px;border-radius:12px;background:#176780;color:#fff;text-decoration:none;font:700 15px Arial,sans-serif;box-shadow:0 9px 28px rgba(18,61,87,.28)">▣ Formation · Nicosie 2026 →</a>';
+        const plainHTML = result.decoded.replace(/<\/body>/i, formationLink + '</body>');
 
         // if the user configured a callback call it, otherwise just replace the whole HTML
         if (typeof replaceHtmlCallback === "function") {
