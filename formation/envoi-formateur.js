@@ -8,7 +8,7 @@
   'use strict';
 
   // Adresse de l'application Web Google Apps Script (se termine par /exec).
-  var URL_SCRIPT = '';
+  var URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbyhqJ870EWeVcYU7mAHwqTUODmAphjKhZRyQyKCzVZgS8NMupRqqIuH2FZv71IYv2_7/exec';
 
   var tag = document.currentScript || document.querySelector('script[data-atelier]');
   var atelier = (tag && tag.getAttribute('data-atelier')) || location.pathname.split('/').pop().replace('.html', '').replace('-', '');
