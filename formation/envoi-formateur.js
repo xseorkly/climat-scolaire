@@ -13,6 +13,7 @@
 
   var tag = document.currentScript || document.querySelector('script[data-atelier]');
   var atelier = (tag && tag.getAttribute('data-atelier')) || location.pathname.split('/').pop().replace('.html', '').replace('-', '');
+  window.URL_SCRIPT_FORMATEUR = URL_SCRIPT;
   if (!URL_SCRIPT) return;
 
   var CLE_NOM = 'formation-climat-nom-stagiaire';
