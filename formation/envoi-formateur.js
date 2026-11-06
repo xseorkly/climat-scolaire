@@ -1,6 +1,7 @@
 /* Envoi des réponses d'une partie d'atelier vers le Drive du formateur.
  * Usage : <script src="envoi-formateur.js" data-atelier="atelier2" defer></script>
- * Chaque <section class="section"> qui contient des champs [data-save] ou [data-k]
+ * Chaque <section class="section"> qui contient des champs à compléter (texte, liste, radio,
+ * cases à cocher, appréciations .rating, tableaux table[data-envoi])
  * reçoit un encadré « Nom + Envoyer au formateur ».
  * Tant que URL_SCRIPT est vide, rien ne s'affiche.
  */
@@ -18,15 +19,78 @@
 
   function texte(el) { return el ? el.textContent.replace(/\s+/g, ' ').trim() : ''; }
 
+  function titreCarte(el) {
+    var carte = el.closest('.card,article,.factor');
+    return carte ? texte(carte.querySelector('h3')) : '';
+  }
+
+  function prefixe(titre, base) {
+    if (titre && base.indexOf(titre) !== 0) return titre + (base ? ' : ' + base : '');
+    return base;
+  }
+
   function libelle(champ) {
     var l = champ.id ? document.querySelector('label[for="' + champ.id + '"]') : null;
     var base = texte(l);
+    if (!base) {
+      var prec = champ.previousElementSibling;
+      if (prec && !/^(TEXTAREA|INPUT|SELECT|BUTTON)$/.test(prec.tagName) && texte(prec).length < 220) base = texte(prec);
+    }
     var tr = champ.closest('tr');
     if (tr) base = texte(tr.querySelector('td,th')) + (base ? ' : ' + base : '');
-    var carte = champ.closest('.card,article');
-    var titre = carte ? texte(carte.querySelector('h3')) : '';
-    if (titre && base.indexOf(titre) !== 0) base = titre + (base ? ' : ' + base : '');
-    return base || champ.id || champ.getAttribute('data-k') || 'Réponse';
+    base = prefixe(titreCarte(champ), base);
+    return base || champ.getAttribute('placeholder') || champ.id || champ.getAttribute('data-k') || 'Réponse';
+  }
+
+  // Recense tout ce qui se complète dans une partie et renvoie une fonction de lecture.
+  function lecteurs(section) {
+    var liste = [], radiosVus = {}, casesVues = [];
+    var champs = section.querySelectorAll('textarea,select,input,[role="group"].rating,table[data-envoi]');
+    [].forEach.call(champs, function (c) {
+      if (c.closest('.envoi-formateur') || c.closest('form')) return;
+      if (c.tagName === 'TABLE') {
+        liste.push(function () {
+          var lignes = [].slice.call(c.querySelectorAll('tbody tr')).filter(function (tr) { return !tr.querySelector('td[colspan]'); })
+            .map(function (tr) { return [].slice.call(tr.cells).filter(function (td) { return !td.querySelector('button'); }).map(texte).filter(Boolean).join(' | '); });
+          return { question: c.getAttribute('data-envoi'), reponse: lignes.join('\n') };
+        });
+        return;
+      }
+      if (c.classList.contains('rating')) {
+        liste.push(function () {
+          return { question: prefixe(titreCarte(c), c.getAttribute('aria-label') || 'Appréciation'), reponse: texte(c.querySelector('[aria-pressed="true"]')) };
+        });
+        return;
+      }
+      var type = (c.getAttribute('type') || '').toLowerCase();
+      if (c.tagName === 'INPUT' && /^(button|submit|reset|hidden|file|search)$/.test(type)) return;
+      if (type === 'radio') {
+        if (radiosVus[c.name]) return;
+        radiosVus[c.name] = true;
+        var groupe = c.closest('.choices') || c.parentNode.parentNode;
+        var q = groupe.previousElementSibling && groupe.previousElementSibling.classList.contains('question') ? texte(groupe.previousElementSibling) : '';
+        liste.push(function () {
+          var coche = section.querySelector('input[type="radio"][name="' + c.name + '"]:checked');
+          return { question: prefixe(titreCarte(c), q) || c.name, reponse: coche ? texte(coche.closest('label')) || coche.value : '' };
+        });
+        return;
+      }
+      if (type === 'checkbox') {
+        var bloc = c.closest('.card,article,fieldset') || section;
+        if (casesVues.indexOf(bloc) >= 0) return;
+        casesVues.push(bloc);
+        liste.push(function () {
+          var coches = [].slice.call(bloc.querySelectorAll('input[type="checkbox"]:checked')).map(function (x) { return '✓ ' + texte(x.closest('label')); });
+          return { question: texte(bloc.querySelector('h3')) || 'Cases cochées', reponse: coches.join('\n') };
+        });
+        return;
+      }
+      liste.push(function () {
+        var v = c.tagName === 'SELECT' ? (c.value ? texte(c.options[c.selectedIndex]) : '') : c.value;
+        return { question: libelle(c), reponse: (v || '').trim() };
+      });
+    });
+    return liste;
   }
 
   var css = document.createElement('style');
@@ -41,8 +105,8 @@
   document.head.appendChild(css);
 
   [].forEach.call(document.querySelectorAll('section.section'), function (section) {
-    var champs = [].slice.call(section.querySelectorAll('textarea[data-save],input[data-save],select[data-save],[data-k]'));
-    if (!champs.length) return;
+    var lire = lecteurs(section);
+    if (!lire.length) return;
     var partie = texte(section.querySelector('h2')) || section.id;
     var boite = document.createElement('div');
     boite.className = 'envoi-formateur';
@@ -64,10 +128,7 @@
     bouton.addEventListener('click', function () {
       var n = nom.value.trim();
       if (!n) { afficher('Indiquez votre nom avant l\'envoi.', 'ko'); nom.focus(); return; }
-      var reponses = champs.map(function (c) {
-        var v = c.tagName === 'SELECT' && !c.value ? '' : c.value;
-        return { question: libelle(c), reponse: (v || '').trim() };
-      });
+      var reponses = lire.map(function (f) { return f(); });
       if (!reponses.some(function (r) { return r.reponse; })) { afficher('Cette partie est encore vide.', 'ko'); return; }
       var idEnvoi = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
       var corps = JSON.stringify({ id: idEnvoi, atelier: atelier, partie: partie, nom: n, page: location.href, reponses: reponses });
