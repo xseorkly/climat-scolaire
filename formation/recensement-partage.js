@@ -9,12 +9,25 @@
   var $ = function (id) { return document.getElementById(id); };
   if (!ADRESSE || !$('trackform')) return;
 
+  // Lecture du tableau par balise <script> (JSONP) : les navigateurs ne la bloquent pas,
+  // contrairement à fetch() vers Google quand plusieurs comptes sont connectés.
+  var compteur = 0;
+  function lire() {
+    return new Promise(function (ok, ko) {
+      var nom = 'recensementRetour' + Date.now().toString(36) + (compteur++);
+      var tag = document.createElement('script'), fini = false;
+      var minuteur = setTimeout(function () { fin(); ko(new Error('délai')); }, 15000);
+      function fin() { fini = true; clearTimeout(minuteur); try { delete window[nom]; } catch (e) { window[nom] = undefined; } tag.remove(); }
+      window[nom] = function (j) { if (fini) return; fin(); ok(j); };
+      tag.onerror = function () { if (fini) return; fin(); ko(new Error('réseau')); };
+      tag.src = ADRESSE + '?action=recensement&callback=' + nom + '&t=' + Date.now();
+      document.head.appendChild(tag);
+    });
+  }
+
   // Le mode partagé ne s'active que si le script Google sait répondre au recensement ;
   // sinon la maquette locale d'origine reste en place.
-  fetch(ADRESSE + '?action=recensement&t=' + Date.now())
-    .then(function (r) { return r.json(); })
-    .then(function (j) { if (j && j.ok && Array.isArray(j.lignes)) demarrer(j.lignes); })
-    .catch(function () {});
+  lire().then(function (j) { if (j && j.ok && Array.isArray(j.lignes)) demarrer(j.lignes); }).catch(function () {});
 
   function demarrer(lignesInitiales) {
 
@@ -92,11 +105,9 @@
 
   function envoyer(d) {
     var corps = JSON.stringify(d);
-    return fetch(ADRESSE, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: corps })
-      .then(function (r) { return r.json(); })
-      .catch(function () {
-        return fetch(ADRESSE, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: corps }).then(function () { return { ok: true }; });
-      })
+    // Envoi sans lecture de la réponse : la relecture du tableau confirme l'enregistrement.
+    return fetch(ADRESSE, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: corps })
+      .then(function () { return { ok: true }; })
       .catch(function () { return { ok: false }; });
   }
 
@@ -104,8 +115,7 @@
   function charger() {
     if (chargement) return Promise.resolve();
     chargement = true;
-    return fetch(ADRESSE + '?action=recensement&t=' + Date.now())
-      .then(function (r) { return r.json(); })
+    return lire()
       .then(function (j) {
         if (!j || !j.ok) throw new Error('réponse');
         lignes = j.lignes || [];

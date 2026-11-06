@@ -19,7 +19,15 @@ var NOM_DOSSIER_RACINE = 'Formation climat scolaire – réponses';
 var NOM_CLASSEUR = 'Réponses formation';
 
 function doGet(e) {
-  if (e && e.parameter && e.parameter.action === 'recensement') return json_(recensementLire_());
+  if (e && e.parameter && e.parameter.action === 'recensement') {
+    var rep = recensementLire_();
+    // Lecture par balise <script> (JSONP) : fonctionne même quand le navigateur bloque fetch().
+    var cb = String(e.parameter.callback || '');
+    if (/^[A-Za-z_$][\w$]{0,60}$/.test(cb)) {
+      return ContentService.createTextOutput(cb + '(' + JSON.stringify(rep) + ');').setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    return json_(rep);
+  }
   return json_({ ok: true, message: 'Service de réception actif.' });
 }
 
