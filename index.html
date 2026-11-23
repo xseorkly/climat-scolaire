@@ -311,7 +311,7 @@ footer .credit{margin-top:10px;color:var(--ink)}
 .pill{font-size:var(--s-xs);padding:3px 8px;border-radius:999px;background:var(--accent-soft);border:1px solid transparent}
 @media (max-width:620px){.pdf-modal{padding:0}.pdf-dialog{width:100vw;height:100vh;border-radius:0}}
 </style>
-<style>.logout-button{flex-shrink:0;border:1px solid #c9dce4;border-radius:9px;background:#fff;color:#176780;padding:10px 12px;font-weight:700;cursor:pointer}.logout-button:hover{background:#eaf3f6}.logout-button:focus-visible{outline:3px solid #65adc4;outline-offset:2px}@media(max-width:760px){.logout-button{font-size:12px;padding:8px}}</style></head>
+</head>
 <body>
 
 
@@ -328,7 +328,7 @@ footer .credit{margin-top:10px;color:var(--ink)}
     <div class="results" id="results" hidden></div>
   </div>
   <a class="urg-btn" href="#urgence"><span class="dot"></span><span class="t-long">Une situation vient de m'être signalée</span><span class="t-short">Urgence</span></a>
-<button type="button" id="logoutButton" class="logout-button">Se déconnecter</button></header>
+</header>
 <div class="layout">
   <nav class="side" id="side" aria-label="Rubriques"></nav>
   <main id="main"></main>
@@ -2409,13 +2409,5 @@ $("#sToggle").addEventListener("click", ()=>{ $("#searchWrap").classList.toggle(
 $("#main").setAttribute("tabindex","-1");
 route();
 
-</script>
-
-<script>
-document.getElementById('logoutButton').addEventListener('click', function(){
- ['staticrypt_passphrase','staticrypt_expiration','climat_phare_passphrase','climat_phare_expiration'].forEach(function(k){try{localStorage.removeItem(k);sessionStorage.removeItem(k)}catch(e){}});
- document.documentElement.innerHTML='<head><meta charset="utf-8"><title>Déconnexion</title></head><body><p>Retour à la page d’entrée…</p></body>';
- window.location.replace(window.location.pathname + window.location.search);
-});
 </script></body>
 </html>
