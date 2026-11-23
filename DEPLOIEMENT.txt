@@ -1,3 +1,3 @@
 Le site est publié en accès libre (plus de mot de passe StatiCrypt depuis le 23/11/2026).
-Pour mettre à jour le contenu, modifier directement index.html à la racine du dépôt.
+Page d’accueil : index.html (présentation, bouton Formation Nicosie, bouton « Accéder au site »). Contenu du site : site.html.
 Les documents liés sur Google Drive restent soumis à leurs propres permissions de partage.
